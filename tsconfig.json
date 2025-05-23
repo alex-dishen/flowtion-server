@@ -1,21 +1,35 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "declaration": true,
-    "removeComments": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
-    "target": "ES2023",
-    "sourceMap": true,
+    /* Basic Options */
+    "target": "ES2024",
+    "module": "CommonJS",
     "outDir": "./dist",
+    "removeComments": true,
+    "resolveJsonModule": true,
+    "noErrorTruncation": true /* Prevents TypeScript from shortening error messages */,
+    "skipLibCheck": true /* Skips type checking for .d.ts files (library definitions) */,
+    "incremental": true /* Enables faster compilation by storing info about previous builds */,
+    "sourceMap": true /* Generates source maps (.map files) to help debug TypeScript in browsers and Node.js */,
+    "forceConsistentCasingInFileNames": true /* Ensures case-sensitive imports in TypeScript */,
+    "useUnknownInCatchVariables": true,
+
+    /* Module Resolution Options */
     "baseUrl": "./",
-    "incremental": true,
-    "skipLibCheck": true,
-    "strictNullChecks": true,
-    "forceConsistentCasingInFileNames": true,
-    "noImplicitAny": false,
-    "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false
+    "esModuleInterop": true /* Enables interoperability between CommonJS and ES Modules */,
+    "allowSyntheticDefaultImports": true /* Allows import x from "module" even if the module does not have a default export */,
+
+    /* Strict Type-Checking Options */
+    "strict": true,
+    "allowUnreachableCode": false,
+    "strictPropertyInitialization": false,
+
+    /* Additional Checks */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true /* When true, prevents unintentional fallthrough in switch statements */,
+
+    /* Experimental Options */
+    "experimentalDecorators": true /* Allows using decorators (@something syntax) */,
+    "emitDecoratorMetadata": true /* Emits extra metadata for decorators (only works with experimentalDecorators: true) */
   }
 }
