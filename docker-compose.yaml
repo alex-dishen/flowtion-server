@@ -1,0 +1,17 @@
+services:
+  flowtion-postgres:
+    image: postgres:17.5
+    container_name: flowtion-postgres
+    restart: always
+    shm_size: 1g
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: flowtion
+    ports:
+      - '55001:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
