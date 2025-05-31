@@ -25,10 +25,19 @@ export default tseslint.config(
   },
   {
     rules: {
-      '@typescript-eslint/no-explicit-any': 'error',
+      // Turned off rules
       '@typescript-eslint/interface-name-prefix': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      "@typescript-eslint/no-unsafe-return": 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+
+      // Warning rules
       '@typescript-eslint/no-floating-promises': 'warn',
       '@typescript-eslint/no-unsafe-argument': 'warn',
+
+      // Error rules
+      '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-misused-promises': 'error',
       'no-console': ['error', { allow: ['warn', 'error'] }],
       'prettier/prettier': [
