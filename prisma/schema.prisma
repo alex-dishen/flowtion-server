@@ -1,5 +1,5 @@
 generator kysely_crud {
-  provider = "ts-node ./prisma/prisma-to-ts.generator.ts"
+  provider = "ts-node ./src/db/prisma-schema-to-db-types.ts"
   output   = "../src/db/db.types.ts"
 }
 
@@ -15,7 +15,7 @@ enum UserStatus {
 }
 
 model User {
-  id                      String     @id @default(uuid()) @db.Uuid
+  id                      String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   first_name              String
   last_name               String
   email                   String     @unique
@@ -25,8 +25,11 @@ model User {
   is_soft_deleted         Boolean    @default(false)
   created_at              DateTime   @default(now())
   deleted_at              DateTime?
-  deleted_by              String?
   status                  UserStatus @default(Active)
+  deleted_by              String?    @db.Uuid
 
-  @@map("user")
+  deletedBy    User?  @relation("DeletedByUser", fields: [deleted_by], references: [id])
+  deletedUsers User[] @relation("DeletedByUser")
+
+  @@map("users")
 }

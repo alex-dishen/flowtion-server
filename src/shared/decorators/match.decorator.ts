@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   registerDecorator,
   ValidationArguments,
@@ -9,8 +7,8 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator';
 
-export function Match(property: string, validationOptions?: ValidationOptions) {
-  return (object: any, propertyName: string) => {
+export const Match = <T>(property: keyof T, validationOptions?: ValidationOptions) => {
+  return (object: object, propertyName: string) => {
     registerDecorator({
       target: object.constructor,
       propertyName,
@@ -19,7 +17,7 @@ export function Match(property: string, validationOptions?: ValidationOptions) {
       validator: MatchConstraint,
     });
   };
-}
+};
 
 @ValidatorConstraint({ name: 'Match' })
 class MatchConstraint implements ValidatorConstraintInterface {

@@ -53,8 +53,8 @@ const createTableType = (modelName: string, modelFields: DMMF.Field[], prismaEnu
 
     const tsType = mapPrismaToTsType(field.type, prismaEnums);
 
-    if (field.name === 'created_at' || field.name === 'updated_at') {
-      getTypeContent += `  ${field.name}: ColumnType<Date, Date | undefined, Date | string>;\n`;
+    if (field.type === 'DateTime') {
+      getTypeContent += `  ${field.name}: ColumnType<Date, Date | string | undefined, Date | string>;\n`;
     } else if (field.hasDefaultValue) {
       getTypeContent += `  ${field.name}: Generated<${field.isRequired ? tsType : `${tsType} | null`}>;\n`;
     } else {
@@ -71,7 +71,7 @@ const createDBType = (prismaModels: DMMF.Model[]): string => {
   let DBTypeContent = `export type DB = {\n`;
 
   for (const model of prismaModels) {
-    DBTypeContent += `  ${toSnakeCase(model.name)}: ${model.name}Table;\n`;
+    DBTypeContent += `  ${toSnakeCase(model.dbName || '')}: ${model.name}Table;\n`;
   }
 
   DBTypeContent += `};\n`;
