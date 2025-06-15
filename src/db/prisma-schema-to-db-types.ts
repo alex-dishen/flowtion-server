@@ -67,8 +67,16 @@ const createTableType = (modelName: string, modelFields: DMMF.Field[], prismaEnu
   return getTypeContent;
 };
 
-const createDBType = (prismaModels: DMMF.Model[]): string => {
-  let DBTypeContent = `export type DB = {\n`;
+const createDBType = (prismaModels: DMMF.Model[], sourceFile: string): string => {
+  let DBTypeContent = '';
+
+  if (sourceFile.includes('public.prisma')) {
+    DBTypeContent = `export type PublicDB = {\n`;
+  } else if (sourceFile.includes('tenant.prisma')) {
+    DBTypeContent = `export type TenantDB = {\n`;
+  } else {
+    DBTypeContent = `export type DB = {\n`;
+  }
 
   for (const model of prismaModels) {
     DBTypeContent += `  ${toSnakeCase(model.dbName || '')}: ${model.name}Table;\n`;
@@ -81,12 +89,12 @@ const createDBType = (prismaModels: DMMF.Model[]): string => {
 
 const onGenerate = async (options: GeneratorOptions) => {
   const outputFile = options.generator.output?.value;
+  const sourceFile = options.generator.sourceFilePath;
 
   if (!outputFile) {
     throw new Error('Output file is not specified in the generator options.');
   }
 
-  // Import Kysely utility types
   let fileContent = `// Auto-generated CRUD types for Kysely
 // Generated at ${new Date().toISOString()}
 
@@ -109,7 +117,7 @@ import type { ColumnType, Generated, Selectable, Insertable, Updateable } from '
     fileContent += `export type ${modelName}UpdateInput = Updateable<${modelName}Table>;\n\n`;
   }
 
-  fileContent += createDBType(prismaModels);
+  fileContent += createDBType(prismaModels, sourceFile);
 
   fs.writeFileSync(outputFile, fileContent);
 

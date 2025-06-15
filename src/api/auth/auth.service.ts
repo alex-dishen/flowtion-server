@@ -1,41 +1,25 @@
-import { ForbiddenException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
-import { UserRepository } from '../user/user.repository';
-import { AuthDto, SignUpDto, SingInDto } from './dto/auth.dto';
 import { verify } from 'argon2';
-import { JwtService } from '@nestjs/jwt';
-import { AuthRepository } from './auth.repository';
-import { TokenService } from './token.service';
-import { MessageDto } from 'src/shared/dtos/message.dto';
-import { hash } from 'argon2';
 import { randomUUID } from 'crypto';
+import { JwtService } from '@nestjs/jwt';
+import { TokenService } from './token.service';
 import { JwtTokenDecode } from './types/types';
+import { AuthRepository } from './auth.repository';
+import { AuthDto, SingInDto } from './dto/auth.dto';
+import { MessageDto } from 'src/shared/dtos/message.dto';
+import { PublicUserRepository } from '../user/public/public-user.repository';
+import { ForbiddenException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 
 @Injectable()
 export class AuthService {
   constructor(
     private jwtService: JwtService,
     private tokenService: TokenService,
-    private userRepository: UserRepository,
     private authRepository: AuthRepository,
+    private publicUserRepository: PublicUserRepository,
   ) {}
 
-  async signUp(data: SignUpDto): Promise<AuthDto> {
-    const sessionsId = randomUUID();
-    const hashedPassword = await hash(data.password);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { confirmation_password, ...updatedData } = { ...data, password: hashedPassword };
-
-    const createdUser = await this.userRepository.create(updatedData);
-    const { accessToken, refreshToken, refreshExpiresIn, refreshTokenKey, hashedRefreshToken } =
-      await this.tokenService.createTokens(createdUser.id, sessionsId);
-
-    await this.authRepository.createOrUpdateUserSession(refreshTokenKey, hashedRefreshToken, refreshExpiresIn);
-
-    return { access_token: accessToken, refresh_token: refreshToken };
-  }
-
-  async signIn(data: SingInDto): Promise<AuthDto> {
-    const user = await this.userRepository.getBy({ email: data.email });
+  async logIn(data: SingInDto): Promise<AuthDto> {
+    const user = await this.publicUserRepository.getPublicUserBy({ email: data.email });
 
     if (!user) throw new ForbiddenException('Credentials incorrect');
 

@@ -1,16 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
 import dayjs from 'dayjs';
-import { CreateTokensResponse, JwtPayloadT, JwtTokenDecode } from './types/types';
-import { EnvVariable } from 'src/shared/types/env-variable.types';
 import { hash } from 'argon2';
+import { JwtService } from '@nestjs/jwt';
+import { Injectable } from '@nestjs/common';
+import { CreateTokensResponse, JwtPayloadT, JwtTokenDecode } from './types/types';
+import { AppConfigService } from 'src/shared/services/config-service/config.service';
 
 @Injectable()
 export class TokenService {
   constructor(
-    private config: ConfigService,
     private jwtService: JwtService,
+    private config: AppConfigService,
   ) {}
 
   async createTokens(userId: string, sessionId: string): Promise<CreateTokensResponse> {
@@ -19,12 +18,12 @@ export class TokenService {
 
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(accessTokenPayLoad, {
-        secret: this.config.get<string>(EnvVariable.ACCESS_SECRET),
-        expiresIn: this.config.get<string>(EnvVariable.ACCESS_TOKEN_EXPIRY_TIME),
+        secret: this.config.get('ACCESS_SECRET'),
+        expiresIn: this.config.get('ACCESS_TOKEN_EXPIRY_TIME'),
       }),
       this.jwtService.signAsync(refreshTokenPayload, {
-        secret: this.config.get<string>(EnvVariable.REFRESH_SECRET),
-        expiresIn: this.config.get<string>(EnvVariable.REFRESH_TOKEN_EXPIRY_TIME),
+        secret: this.config.get('REFRESH_SECRET'),
+        expiresIn: this.config.get('REFRESH_TOKEN_EXPIRY_TIME'),
       }),
     ]);
 
@@ -48,7 +47,7 @@ export class TokenService {
 
   verifyRefreshToken(token: string): Promise<JwtPayloadT> {
     return this.jwtService.verifyAsync(token, {
-      secret: this.config.get(EnvVariable.REFRESH_SECRET),
+      secret: this.config.get('REFRESH_SECRET'),
     });
   }
 

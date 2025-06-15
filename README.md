@@ -1,98 +1,149 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Flowtion Server
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A NestJS-based server application with multi-tenant (multi-schema) architecture, using Prisma for migrations management, Redis for caching and Kysely for database management.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Prerequisites
 
-## Description
+- Node.js v22.14.0
+- Docker and Docker Compose
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Project Setup
 
-## Project setup
+1. Clone the repository
 
-```bash
-$ npm install
-```
+2. Install dependencies:
 
-## Compile and run the project
+   ```bash
+   npm install
+   ```
 
-```bash
-# development
-$ npm run start
+3. Create a `.env` file in the root directory with the following variables:
 
-# watch mode
-$ npm run start:dev
+   ```env
+   NODE_ENV='local'
 
-# production mode
-$ npm run start:prod
-```
+   PORT=3001
+   MIGRATE_TENANTS=false
 
-## Run tests
+   DATABASE_URL='postgresql://postgres:postgres@localhost:55001/flowtion'
+   ACCESS_SECRET=provide your own secret, can be a random string
+   COOKIE_SECRET=provide your own secret, can be a random string
+   REFRESH_SECRET=provide your own secret, can be a random string
+   ACCESS_TOKEN_EXPIRY_TIME=provide your own time like 2h or 30m
+   REFRESH_TOKEN_EXPIRY_TIME=provide your own time like 2h or 30m
+   ```
 
-```bash
-# unit tests
-$ npm run test
+4. The project uses Docker Compose to run the required services. To start them:
 
-# e2e tests
-$ npm run test:e2e
+   ```bash
+   docker compose up -d
+   ```
 
-# test coverage
-$ npm run test:cov
-```
+   This will start:
 
-## Deployment
+   - PostgreSQL (port 55001)
+   - Redis (port 6379)
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+5. Generate Types <br/>
+   To make sure Kysely provides proper TypeScript support, we need to generate types from Prisma schemas:
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+   ```bash
+   # Generate types for public schema
+   npm run generate:public:types
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+   # Generate types for tenant schema
+   npm run generate:tenant:types
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+   # Generate both
+   npm run generate:all:types
+   ```
 
-## Resources
+6. Starting the Application
 
-Check out a few resources that may come in handy when working with NestJS:
+   ```bash
+   # Development mode
+   npm run start:dev
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+   # Debug mode
+   npm run start:debug
+   ```
 
-## Support
+   The application will run pre-checks before starting to ensure all requirements are met.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Database Management
 
-## Stay in touch
+The project uses a multi-schema database architecture:
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+- `public` schema: Manages tenant and all of the tenants shared data. This schema has a different tables from the tenant schemas such as zara, apple or adidas
+- `tenant` schema: Individual tenant-specific data. The above mentioned zara, apple and adidas will have the same tables, indexes and structure
 
-## License
+### Database Migrations
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+To update the database schema you first need to clarify whether it's a public or tenant schema. Those two schemas are updated (migrated) in two different ways
+
+#### Tenant migration
+
+There is no command to migrate a tenant as there can be 20 tenants and then the command would have to be run 20 times. This process is automated:
+
+1. Make a change in `tenant.prisma` file
+
+2. Create a migration file based on the changes in `tenant.prisma` file
+
+   ```bash
+   npm run create:migration-file:tenant
+   ```
+
+3. Open `.env` file and change `MIGRATE_TENANTS` field from `false` to `true`
+
+4. Run the container if not yet running with the db
+
+5. Start the server. It'll automatically migrate all of the tenants and start the application
+
+   ```bash
+   npm run start:dev
+   -------------
+   npm run start:debug
+   ```
+
+6. Open `.env` file and change `MIGRATE_TENANTS` field back to `false`
+
+#### Public migration
+
+It's i easer to migrate public schema as the default schema Prisma executes the queries on is public
+
+1. Make a change in `public.prisma` file
+
+2. Create a migration file based on changes in `public.prisma` file
+
+   ```bash
+   npm run create:migration-file:public
+   ```
+
+3. Run the container if not yet running with the db
+
+4. Migrate public schema
+   ```bash
+   npm run migrate:public
+   ```
+
+## API Documentation
+
+> 💡 API documentation is not available in production
+
+Swagger/OpenAPI documentation can be accessed at `http://localhost:3001/api`
+
+## Multi-Tenant Architecture
+
+### DI Subtree Implementation
+
+The project implements a Request-scoped Dependency Injection system for handling multi-tenant contexts.
+
+You can read the article on [Injection scopes](https://docs.nestjs.com/fundamentals/injection-scopes) to better understand how they work in NestJS
+
+### TL;DR:
+
+`TenantContext` class is marked with such decorator `@Injectable({ scope: Scope.REQUEST, durable: true })`
+
+This means, each provider that will depend on `TenantContext` will implicitly become request scoped as well. `DatabaseService` provider is dependent on `TenantContext`, and at the same time most of the application is dependent on `DatabaseService` provider. That means that most of the application is request scoped.
+
+Each request will create new instances of all of the controllers, services and repositories to provide the correct schema for db request. To avoid creating new instances on each request `durable: true` comes into play. This field tells NestJS to create the DI-subtree only once and then reuse it whenever the request with the same `x-tenant-id` comes in.

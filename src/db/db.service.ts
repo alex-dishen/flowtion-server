@@ -1,27 +1,37 @@
-import { Injectable, InternalServerErrorException, OnModuleDestroy } from '@nestjs/common';
-import { Kysely, PostgresDialect, SelectQueryBuilder } from 'kysely';
-import { Pool } from 'pg';
-import { DB } from './db.types';
-import { ConfigService } from '@nestjs/config';
+import { PublicDB } from './types/public-db.types';
+import { TenantDB } from './types/tenant-db.types';
+import { Kysely, SelectQueryBuilder } from 'kysely';
+import { TenantContext } from './tenant-services/tenant.context';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PaginatedResult, PaginateOptions, PaginationMetadata } from 'src/shared/dtos/pagination.dto';
+import { DatabaseConnectionService } from './db-connection.service';
 
 @Injectable()
-export class DatabaseService implements OnModuleDestroy {
-  public readonly db: Kysely<DB>;
-  public readonly publicDb: Kysely<DB>;
+export class DatabaseService {
+  public readonly db: Kysely<unknown>;
+  public readonly publicDb: Kysely<PublicDB>;
+  public readonly tenantDb: Kysely<TenantDB>;
 
-  constructor(configService: ConfigService) {
-    const pool = new Pool({ connectionString: configService.get('DATABASE_URL') });
+  constructor(
+    private tenantContext: TenantContext,
+    private dbConnection: DatabaseConnectionService,
+  ) {
+    this.db = this.dbConnection.connection;
+    this.publicDb = this.dbConnection.connection.withSchema('public') as Kysely<PublicDB>;
 
-    this.db = new Kysely<DB>({
-      dialect: new PostgresDialect({ pool }),
+    // With simple assignment, the schema would be evaluated ONCE during service initialization
+    // This way (with getter) it is evaluated on each request
+    Object.defineProperty(this, 'tenantDb', {
+      get: () => {
+        const schema = this.tenantContext.getSchema();
+
+        if (!schema) {
+          throw new Error('Tenant schema not set');
+        }
+
+        return this.dbConnection.connection.withSchema(schema);
+      },
     });
-
-    this.publicDb = this.db.withSchema('public');
-  }
-
-  async onModuleDestroy() {
-    await this.db.destroy();
   }
 
   private generateMeta = (take: number, skip: number, total: number): PaginationMetadata => {

@@ -10,13 +10,21 @@
   },
   "scripts": {
     "build": "nest build",
-    "start": "npm run pre-checks && nest start --watch",
+    "start": "npm run pre-checks && nest start",
+    "start:dev": "npm run pre-checks && npm start --watch",
     "start:debug": "npm run pre-checks && nest start --debug --watch",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "prepare": "husky",
+    "generate:public:types": "npx prisma generate --schema prisma/public/public.prisma",
+    "generate:tenant:types": "npx prisma generate --schema prisma/tenant/tenant.prisma",
+    "generate:all:types": "npm run generate:public:types && npm run generate:tenant:types",
+    "create:migration-file:public": "npx prisma migrate dev --create-only --schema prisma/public/public.prisma",
+    "create:migration-file:tenant": "npx prisma migrate dev --create-only --schema prisma/tenant/tenant.prisma",
+    "create:migration-file:all": "npm run create:migration-file:public && npm run create:migration-file:tenant",
+    "migrate:public": "npx prisma migrate deploy --schema prisma/public/public.prisma",
     "tsc": "tsc",
+    "prepare": "husky",
     "lint-staged": "lint-staged",
-    "pre-checks": "node pre-checks/run-start-checks.js"
+    "pre-checks": "node pre-checks/run-start-checks.js",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

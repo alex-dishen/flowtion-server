@@ -1,24 +1,5 @@
 import { OmitType } from '@nestjs/swagger';
-import { IsEmail, IsJWT, IsString, IsStrongPassword } from 'class-validator';
-import { Match } from 'src/shared/decorators/match.decorator';
-
-export class SignUpDto {
-  @IsString()
-  first_name: string;
-
-  @IsString()
-  last_name: string;
-
-  @IsStrongPassword()
-  password: string;
-
-  @IsStrongPassword()
-  @Match<SignUpDto>('password', { message: 'Passwords do not match' })
-  confirmation_password: string;
-
-  @IsEmail()
-  email: string;
-}
+import { IsEmail, IsJWT, IsString } from 'class-validator';
 
 export class SingInDto {
   @IsEmail()

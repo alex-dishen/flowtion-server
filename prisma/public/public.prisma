@@ -1,0 +1,63 @@
+generator kysely_crud {
+  provider = "ts-node ./src/db/prisma-schema-to-db-types.ts"
+  output   = "../../src/db/types/public-db.types.ts"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserStatus {
+  Active
+  Inactive
+  Pending
+}
+
+model User {
+  id         String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  first_name String
+  last_name  String
+  email      String     @unique
+  password   String
+  created_at DateTime   @default(now())
+  updated_at DateTime?
+  is_deleted Boolean    @default(false)
+  deleted_at DateTime?
+  deleted_by String?    @db.Uuid
+  status     UserStatus @default(Pending)
+
+  deletedBy          User?                @relation("DeletedByUser", fields: [deleted_by], references: [id])
+  deletedUsers       User[]               @relation("DeletedByUser")
+  UserTenantRelation UserTenantRelation[]
+
+  @@map("users")
+}
+
+model Tenant {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String
+  schema_name String   @unique
+  subdomain   String   @unique
+  logo_url    String?
+  api_key     String   @unique
+  is_active   Boolean  @default(true)
+  created_at  DateTime @default(now())
+
+  UserTenantRelation UserTenantRelation[]
+
+  @@map("tenants")
+}
+
+model UserTenantRelation {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenant_id  String   @db.Uuid
+  user_id    String   @db.Uuid
+  created_at DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenant_id], references: [id])
+  user   User   @relation(fields: [user_id], references: [id])
+
+  @@unique([user_id, tenant_id])
+  @@map("user_tenant_relations")
+}

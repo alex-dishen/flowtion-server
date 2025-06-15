@@ -1,5 +1,5 @@
 // Auto-generated CRUD types for Kysely
-// Generated at 2025-06-11T06:04:59.430Z
+// Generated at 2025-06-14T16:05:36.840Z
 
 import type { ColumnType, Generated, Selectable, Insertable, Updateable } from 'kysely';
 
@@ -14,19 +14,17 @@ export type UserTable = {
   first_name: string;
   last_name: string;
   email: string;
-  password: string;
-  avatar_image_url: string | null;
-  avatar_image_bucket_key: string | null;
-  is_soft_deleted: Generated<boolean>;
   created_at: ColumnType<Date, Date | string | undefined, Date | string>;
+  updated_at: ColumnType<Date, Date | string | undefined, Date | string>;
+  is_deleted: Generated<boolean>;
   deleted_at: ColumnType<Date, Date | string | undefined, Date | string>;
-  status: Generated<UserStatus>;
   deleted_by: string | null;
+  status: Generated<UserStatus>;
 };
 export type UserGetOutput = Selectable<UserTable>;
 export type UserCreateInput = Insertable<UserTable>;
 export type UserUpdateInput = Updateable<UserTable>;
 
-export type DB = {
+export type TenantDB = {
   users: UserTable;
 };
