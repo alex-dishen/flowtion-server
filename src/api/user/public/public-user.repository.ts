@@ -37,7 +37,7 @@ export class PublicUserRepository {
     await this.kysely.publicDb.updateTable('users').set(data).where('id', '=', userId).execute();
   }
 
-  deletePublicUser(userId: string): Promise<void> {
+  async deletePublicUser(userId: string): Promise<void> {
     // Public user can exist without a tenant user, but tenant user can't exist without a public user
     return this.kysely.db.transaction().execute(async trx => {
       const publicDB = trx.withSchema('public') as unknown as Kysely<PublicDB>;

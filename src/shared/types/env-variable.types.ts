@@ -1,18 +1,13 @@
-export enum EnvVariableEnum {
-  PORT = 'PORT',
-  NODE_ENV = 'NODE_ENV',
-  DATABASE_URL = 'DATABASE_URL',
-  ACCESS_SECRET = 'ACCESS_SECRET',
-  COOKIE_SECRET = 'COOKIE_SECRET',
-  REFRESH_SECRET = 'REFRESH_SECRET',
-  MIGRATE_TENANTS = 'MIGRATE_TENANTS',
-  ACCESS_TOKEN_EXPIRY_TIME = 'ACCESS_TOKEN_EXPIRY_TIME',
-  REFRESH_TOKEN_EXPIRY_TIME = 'REFRESH_TOKEN_EXPIRY_TIME',
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace NodeJS {
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+    interface ProcessEnv extends EnvVariableT {}
+  }
 }
 
-export type EnvVariableT = {
+export interface EnvVariableT {
   PORT: number;
-  NODE_ENV: string;
   DATABASE_URL: string;
   ACCESS_SECRET: string;
   COOKIE_SECRET: string;
@@ -20,4 +15,5 @@ export type EnvVariableT = {
   MIGRATE_TENANTS: boolean;
   ACCESS_TOKEN_EXPIRY_TIME: string;
   REFRESH_TOKEN_EXPIRY_TIME: string;
-};
+  NODE_ENV: 'local' | 'dev' | 'stage' | 'prod';
+}

@@ -1,7 +1,6 @@
 import { Pool } from 'pg';
 import { Kysely, PostgresDialect } from 'kysely';
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
-import { EnvVariableEnum } from 'src/shared/types/env-variable.types';
 
 {
   /* 
@@ -18,7 +17,7 @@ export class DatabaseConnectionService implements OnModuleDestroy {
 
   constructor() {
     const pool = new Pool({
-      connectionString: process.env[EnvVariableEnum.DATABASE_URL],
+      connectionString: process.env.DATABASE_URL,
     });
 
     this.connection = new Kysely({

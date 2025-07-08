@@ -7,6 +7,8 @@ A NestJS-based server application with multi-tenant (multi-schema) architecture,
 - Node.js v22.14.0
 - Docker and Docker Compose
 
+<br/>
+
 ## Project Setup
 
 1. Clone the repository
@@ -77,11 +79,11 @@ The project uses a multi-schema database architecture:
 - `public` schema: Manages tenant and all of the tenants shared data. This schema has a different tables from the tenant schemas such as zara, apple or adidas
 - `tenant` schema: Individual tenant-specific data. The above mentioned zara, apple and adidas will have the same tables, indexes and structure
 
-### Database Migrations
-
 To update the database schema you first need to clarify whether it's a public or tenant schema. Those two schemas are updated (migrated) in two different ways
 
-#### Tenant migration
+### Tenant schemas migration
+
+---
 
 There is no command to migrate a tenant as there can be 20 tenants and then the command would have to be run 20 times. This process is automated:
 
@@ -107,7 +109,9 @@ There is no command to migrate a tenant as there can be 20 tenants and then the 
 
 6. Open `.env` file and change `MIGRATE_TENANTS` field back to `false`
 
-#### Public migration
+### Public schema migration
+
+---
 
 It's i easer to migrate public schema as the default schema Prisma executes the queries on is public
 
@@ -125,12 +129,15 @@ It's i easer to migrate public schema as the default schema Prisma executes the 
    ```bash
    npm run migrate:public
    ```
+   <br />
 
 ## API Documentation
 
 > 💡 API documentation is not available in production
 
 Swagger/OpenAPI documentation can be accessed at `http://localhost:3001/api`
+
+<br />
 
 ## Multi-Tenant Architecture
 
